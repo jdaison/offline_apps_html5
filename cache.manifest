@@ -1,0 +1,16 @@
+CACHE MANIFEST
+#2013-12-04-rev0.2
+
+NETWORK:
+*
+
+CACHE:
+libs/jquery-2.0.3.min.js
+libs/jquery.mobile-1.4.0-rc.1.min.js
+libs/jquery.mobile-1.4.0-rc.1.min.css
+libs/images/ajax-loader.gif
+
+index2.html
+index3.html
+index4.html
+add_todo.html

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>IndexedDB</title>
+    <script type="text/javascript">
+        var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+        var dbTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+        var db;
+        (function () {     
+            var clientes = [
+                { nombre: "John Agudelo", ruta: "LU0" , direccion: "cra 52D 76-67 "  },
+                { nombre: "Juan Giraldo", ruta: "LU1" , direccion: "dir1"  },
+                { nombre: "Otro", ruta: "LU2" , direccion: "yyy zzz"  }
+            ];
+ 
+            function initDb() {
+                var request = indexedDB.open("testDB", 1);  
+                request.onsuccess = function (evt) {
+                    db = request.result;                                                            
+                };
+ 
+                request.onerror = function (evt) {
+                    console.log("IndexedDB error: " + evt.target.errorCode);
+                };
+ 
+                request.onupgradeneeded = function (evt) {                   
+                    var objectStore = evt.currentTarget.result.createObjectStore("clientes", 
+                    { keyPath: "id", autoIncrement: true });
+                    objectStore.createIndex("nombre", "nombre", { unique: false });
+                    objectStore.createIndex("ruta", "ruta", { unique: false });
+                    objectStore.createIndex("direccion", "direccion", { unique: false });
+ 
+                    for (i in clientes) {
+                        objectStore.add(clientes[i]);
+                    }
+                };
+            }
+ 
+            function contentLoaded() {
+                initDb();                
+                var btnAdd = document.getElementById("btnAdd");
+                var btnDelete = document.getElementById("btnDelete");
+                var btnPrint = document.getElementById("btnPrint");                
+ 
+                btnAdd.addEventListener("click", function () {
+                    var nombre = document.getElementById("nombre").value;
+                    var ruta = document.getElementById("ruta").value;
+                    var dir = document.getElementById("dir").value;
+
+                    var transaction = db.transaction("clientes", "readwrite");
+                    var objectStore = transaction.objectStore("clientes");                    
+                    var cli = [{ nombre: nombre, ruta: ruta , direccion: dir }];
+                    var request = objectStore.add(cli[0]);
+                    request.onsuccess = function (evt) {
+                        console.log("agregado")
+                    };
+                }, false);
+ 
+                btnDelete.addEventListener("click", function () {
+                    var id = document.getElementById("txtID").value;
+ 
+                    var transaction = db.transaction("clientes", "readwrite");
+                    var objectStore = transaction.objectStore("clientes");
+                    var request = objectStore.delete(parseInt(id));
+                    request.onsuccess = function(evt) {  
+                        console.log("eliminado")
+                    };
+                }, false);
+ 
+
+
+
+                btnPrint.addEventListener("click", function () {
+                    var output = document.getElementById("printOutput");
+                    output.textContent = "";
+ 
+                    var transaction = db.transaction("clientes", "readwrite");
+                    var objectStore = transaction.objectStore("clientes");
+                    var request = objectStore.openCursor();
+                    var texto = "";
+                    request.onsuccess = function(evt) {  
+                        var cursor = evt.target.result;  
+                        if (cursor) {  
+                            texto += "id: " + cursor.key + 
+                                        " es " + cursor.value.nombre + "--" + cursor.value.ruta;                            
+                            cursor.continue();  
+                        }  
+                        else {  
+                            console.log("Fin de registros");  
+                        } 
+                        output.textContent = texto ;
+                    };  
+                }, false);              
+            }
+ 
+            window.addEventListener("DOMContentLoaded", contentLoaded, false); 
+    })();       
+    </script>
+</head>
+<body>
+    <div id="container">
+        <label for="txtNombre">
+            Nombre:
+        </label>
+        <input type="text" id="nombre" name="txtnombre" />
+        <br />
+        <label for="txtRuta">
+            Ruta:
+        </label>
+        <input type="text" id="ruta" name="txtRuta" />
+        <br />
+        <label for="txtDir">
+            Direccion:
+        </label>
+        <input type="text" id="dir" name="txtDir" />
+        <br />
+        <input type="button" id="btnAdd" value="Agregar" />
+        <br />
+        <label for="txtID">
+            ID:
+        </label>
+        <input type="text" id="txtID" name="txtID" />
+        <br />
+        <input type="button" id="btnDelete" value="Eliminar" />
+        <br />
+        <input type="button" id="btnPrint" value="Ver registros" />
+        <br />
+        <output id="printOutput">
+        </output>
+    </div>
+</body>
+</html>

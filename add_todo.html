@@ -1,0 +1,22 @@
+<html> 
+	<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet"  href="themes/default/" />  
+	</head> 
+<body> 
+	<div data-role="header" data-position="inline" data-theme="b">
+		<h1>Add TODO</h1>
+	</div>
+	<div data-role="content" data-theme="b">
+		<form action="">
+			<label for="textinput1">
+				TODO Text
+			</label>
+			<input id="textinput1" placeholder="Enter text here..." value="" type="text" />
+			<a href="docs-dialogs.html" data-role="button" data-rel="back" data-theme="b" onClick="save_todo();" data-icon="check">Submit</a>       
+			<a href="index.html" data-icon="delete" data-role="button" data-rel="back" data-theme="c" data-transition="fade" data-direction="reverse" id="cancel">Cancel</a>    
+		</form>
+	</div>
+</body>
+</html>
